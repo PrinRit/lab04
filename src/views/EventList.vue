@@ -10,6 +10,7 @@
     <router-link 
     :to="{name:'EventList',query:{page: page+1}}"
     rel="next"
+    v-if="hasNextPage"
     >Next Page</router-link>
   </div>
 </template>
@@ -33,7 +34,8 @@ export default {
   },
   data() {
     return {
-      events: null
+      events: null,
+      totalEvent:0 //<--Add this to store totalEvents
     }
   },
   created() {
@@ -41,11 +43,20 @@ export default {
       EventService.getEvents(2,this.page)
         .then((response) => {
           this.events = response.data
+          this.totalEvent = response.headers['x-total-count'] //<--Store it
         })
         .catch((error) => {
           console.log(error)
         })
     })
+  },
+  computed:{
+    hasNextPage(){
+      //Firat, calculate total pages
+      let totalPages = Math.ceil(this.totalEvent/2) //2 is event per page.
+      //Then check to see if the current page is less than the total pages.
+      return this.page < totalPages
+    }
   }
 }
 </script>

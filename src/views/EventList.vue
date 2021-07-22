@@ -16,6 +16,15 @@
       v-if="hasNextPage"
       >Next Page</router-link>
     </div>
+
+    <select id="rating" v-model.number="rating">
+          <option>6</option>
+          <option>5</option>
+          <option>4</option>
+          <option>3</option>
+          <option>2</option>
+          <option>1</option>
+        </select> 
   </div>
 </template>
 
@@ -39,12 +48,13 @@ export default {
   data() {
     return {
       events: null,
-      totalEvent:0 //<--Add this to store totalEvents
+      totalEvent:0,//<--Add this to store totalEvents
+      rating:1
     }
   },
   created() {
     watchEffect(()=>{
-      EventService.getEvents(2,this.page)
+      EventService.getEvents(this.rating,this.page)
         .then((response) => {
           this.events = response.data
           this.totalEvent = response.headers['x-total-count'] //<--Store it
@@ -57,7 +67,7 @@ export default {
   computed:{
     hasNextPage(){
       //Firat, calculate total pages
-      let totalPages = Math.ceil(this.totalEvent/2) //2 is event per page.
+      let totalPages = Math.ceil(this.totalEvent/this.rating) //2 is event per page.
       //Then check to see if the current page is less than the total pages.
       return this.page < totalPages
     }
@@ -86,5 +96,9 @@ export default {
 
 #page-next{
   text-align: right;
+}
+
+#limits{
+  text-align: center;
 }
 </style>
